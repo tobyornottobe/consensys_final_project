@@ -95,7 +95,7 @@ class App extends Component {
   this.setState(({ claimed }) => ({ claimed : true}))
 
   var date = new Date();
-  var timestamp = date.getTime();
+  var timestamp = date.toTimeString();
   this.setState(({ claimTime }) => ({ claimTime : timestamp}))
 }
 
@@ -132,10 +132,10 @@ runExample = async () => {
        return (
            <div id="step2" className="floatright bluebox" hidden={false}>
            <h2>Your share</h2><img className="phone" src={smartphone} alt="phone"></img>
-           <h3>Today's interest of {this.state.interest} ETH, divided by {this.state.beneficiaries} beneficiaries:  </h3>
+           <p>Today's interest of {this.state.interest} ETH, divided by {this.state.beneficiaries} beneficiaries:  </p>
            <h3>You can claim approx. {this.state.claimAmount} ETH, today.</h3>
            <Button  onClick={this.increaseClaimCount}>Claim it</Button>
-           <h3>{this.state.claimed ? "Claimed on" : " "}</h3>
+           <p>{this.state.claimed ? "Claimed on " : " "}{this.state.claimTime}</p>
            </div>
          );
        }
