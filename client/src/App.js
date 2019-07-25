@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import SimpleStorageContract from "./contracts/SimpleStorage.json";
+import UBIContract from "./contracts/UBI.json";
 import getWeb3 from "./utils/getWeb3";
-import Web3 from "web3";
+//import Web3 from "web3";
 
 import { MetaMaskButton } from 'rimble-ui';
 import { Button } from 'rimble-ui';
+import { QR } from 'rimble-ui';
 
 
 
@@ -19,7 +20,7 @@ class App extends Component {
       balance: 4,
       web3: null,
       accounts: null,
-      beneficiaries: 2483,
+      beneficiaries: 0,
       contract: null,
       interest: 0,
       claimed: false,
@@ -40,12 +41,16 @@ class App extends Component {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
 
-      var balance = await web3.eth.getBalance("0xde168992b691107b6ef8d0cdc91a55b4017e9c06"); //Will give value in.
+
+      var balance = await web3.eth.getBalance("0xc9ef812fe930aeccb0e428de3ae332429b52b531"); //Will give value of the foundation capital in.
       var num = web3.utils.fromWei(balance, "ether")
       this.setState({ storageValue: num});
 
-      this.setState(({ interest }) => ({ interest : this.state.storageValue * 0.1499}))
-      this.setState(({ interest }) => ({ claimAmount : this.state.interest / this.state.beneficiaries}))
+      this.setState(({ interest }) => ({ interest : this.state.storageValue * 0.1499}));
+      if(this.state.beneficiaries > 0){
+          this.setState(({ interest }) => ({ claimAmount : this.state.interest / this.state.beneficiaries}));
+      }
+
 
 
 
@@ -54,9 +59,9 @@ class App extends Component {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
-      const deployedNetwork = SimpleStorageContract.networks[networkId];
+      const deployedNetwork = UBIContract.networks[networkId];
       const instance = new web3.eth.Contract(
-        SimpleStorageContract.abi,
+        UBIContract.abi,
         deployedNetwork && deployedNetwork.address,
 
       );
@@ -97,22 +102,31 @@ class App extends Component {
   var date = new Date();
   var timestamp = date.toTimeString();
   this.setState(({ claimTime }) => ({ claimTime : timestamp}))
+  this.state.beneficiaries += 1;
+  if (Button === 'clicked') {
+		Button = {
+			backgroundColor: 'red'
+		}
+  }
+
 }
 
 
 runExample = async () => {
   const { accounts, contract } = this.state;
 
-  // Stores a given value, 5 by default.
+  // Stores and deposits to the foundation capital
   // await contract.methods.set(2).send({ from: accounts[0] });
-  await contract.methods.deposit(2).send({ from: accounts[0] });
+  // await contract.methods.deposit().send({ from: accounts[0] });
+  //  var receiverAccount = '0xddd5fc674275e8106b490b79da5e79e5565601fe';
+  //  await contract.methods.deposit().send({ from: accounts[0] });
 
 
   // Get the value from the contract to prove it worked.
   // const response = await contract.methods.get().call();
-  const response = await contract.methods.withdraw().call();
+//  const response = await contract.methods.withdraw().send({ from: accounts[1] });
   // Update state with the result.
-  this.setState({ claimAmount: response});
+//  this.setState({ claimAmount: response});
 
 
 };
@@ -136,11 +150,22 @@ runExample = async () => {
            <h2>Your share</h2><img className="phone" src={smartphone} alt="phone"></img>
            <p>Today's interest of {this.state.interest} ETH, divided by {this.state.beneficiaries} beneficiaries:  </p>
            <h3>You can claim approx. {this.state.claimAmount} ETH, today.</h3>
-           <Button  onClick={this.increaseClaimCount}>Claim it</Button>
+           <Button  onClick={this.increaseClaimCount} hidden={false}>Claim it</Button>
            <p>{this.state.claimed ? "Claimed on " : " "}{this.state.claimTime}</p>
            </div>
          );
        }
+
+  renderDonateBox(){
+        return(
+          <div id="step3" className="floatright bluebox" hidden={false}>
+          <h2>Donate to this address</h2>
+          <QR value="0xAc03BB73b6a9e108530AFf4Df5077c2B3D481e5A" />
+          </div>
+              )
+            }
+
+
 
 
 
@@ -163,6 +188,7 @@ runExample = async () => {
               <h2 className="tcenter">Current foundation assets: <span className="cyan capital">{this.state.storageValue} ETH</span></h2>
               <h3>You need money? Claim it. Every 24h.</h3>
               <h3>You want to help? Donate. Temporary or permanently.</h3>
+
             </div>
 
 
