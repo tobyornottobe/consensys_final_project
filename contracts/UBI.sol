@@ -4,10 +4,10 @@ import 'openzeppelin-solidity/contracts/lifecycle/Pausable.sol';
 //import 'github.com/OpenZeppelin/zeppelin-solidity/contracts/lifecycle/Pausable.sol';
 
 
-
+/** @title Universal Block Income (UBI) */
 contract UBI is Pausable {
 
-    uint payTime; 
+    uint payTime;
     uint claimWaitSeconds = 5 seconds;
     uint beneficiaryCount;
     uint interest;
@@ -20,10 +20,18 @@ contract UBI is Pausable {
         updateClaimTime();
     }
 
+    /** @dev Updates a time, when a claim is made with additional 24 hours
+      * @param now = current block timestamp
+      * @param claimWaitSeconds is specified in the variables on the top
+      * @return payTime, the time when then next claim can be made
+      */
     function updateClaimTime() public {
          payTime = now + claimWaitSeconds;
     }
 
+    /** @dev donor can deposit an amount to an account accessible by the beneficiaries
+      * @return deposit made by donor
+      */
     function deposit()
     external //only people from outside can call it, want to be as restrictive as possible
     whenNotPaused()
@@ -32,6 +40,11 @@ contract UBI is Pausable {
         deposits += msg.value;
     }
 
+    /** @dev adds a UBI beneficiary to a mapping
+      * @param adds a beneficiary if the beneficiary isn't in the mapping yet
+      * @param beneficiaryCount is number of beneficiaries
+      * @return beneficiaryCount
+      */
     function addBeneficiary(address payable beneficiary)
     external
     onlyAgent()
@@ -45,6 +58,12 @@ contract UBI is Pausable {
 
     }
 
+    /** @dev Beneficiary can withdraw her/his share of the UBI
+      * @param interest available in deposit account is divided by the count of beneficiaries
+      * @param time of claim is updated, that beneficiaries can't claim multiple times in 24 hours
+      * @param beneficiary count is reset
+      * @return payment for beneficiary
+      */
     function withdraw()
     public
     onlyOnPayDay()
@@ -59,16 +78,20 @@ contract UBI is Pausable {
 
     }
 
+    /** @dev defines owner of contract
+      */
     modifier onlyAgent() {
         require(msg.sender == agent);
         _;
     }
-
+    /** @dev defines who is a beneficiary
+      */
     modifier onlyBeneficiary() {
         require(beneficiaries[msg.sender] == true);
         _;
     }
-
+    /** @dev defines when future withdrawal will be possible
+      */
     modifier onlyOnPayDay() {
         require (block.timestamp > payTime);
         _;
