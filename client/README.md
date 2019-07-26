@@ -1,3 +1,25 @@
+
+# Consensys Academy 2019 Blockchain Developer Program Final Project
+
+# Overview
+
+**Universal Block Income**
+
+Code Repository: https://github.com/tobyornottobe/consensys_final_project
+
+## Description
+
+Universal Block Income (UBI) is a basic income contract.
+
+
+
+##Scope
+
+Connection to deFi contracts is not in scope due to time constraints, furthermore a unique human being check, which would mitigate sibil attacks, is not in scope either.
+
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

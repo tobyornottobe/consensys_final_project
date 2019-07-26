@@ -57,6 +57,7 @@ class App extends Component {
       // Use web3 to get the user's accounts (e.g. Metamask account).
       const accounts = await web3.eth.getAccounts();
 
+
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
       const deployedNetwork = UBIContract.networks[networkId];
@@ -96,6 +97,27 @@ class App extends Component {
 
    increaseClaimCount = async () =>
 {
+
+
+
+  const web3 = await getWeb3();
+
+  const accounts = await web3.eth.getAccounts();
+  console.log(accounts);
+
+  // Get the contract instance.
+  const networkId = await web3.eth.net.getId();
+  const deployedNetwork = UBIContract.networks[networkId];
+  const instance = new web3.eth.Contract(
+    UBIContract.abi,
+    deployedNetwork && deployedNetwork.address,
+  );
+  this.setState({ web3, accounts, contract: instance });
+  const response = await instance.methods.withdraw().send({ from: accounts[1] });
+  console.log(instance);
+
+
+
   this.setState(({ claimCount }) => ({ claimCount : claimCount + 1}))
   this.setState(({ claimed }) => ({ claimed : true}))
 

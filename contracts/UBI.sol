@@ -7,11 +7,11 @@ import 'openzeppelin-solidity/contracts/lifecycle/Pausable.sol';
 
 contract UBI is Pausable {
 
-    uint payTime;
+    uint payTime; 
     uint claimWaitSeconds = 5 seconds;
     uint beneficiaryCount;
     uint interest;
-    uint public deposits; //no other contracts can call it
+    uint public deposits; //set to private for PROD, that no other contracts can call it
     address private agent;
     mapping(address => bool) public beneficiaries;
 
