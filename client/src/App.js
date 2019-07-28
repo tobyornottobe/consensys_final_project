@@ -27,7 +27,7 @@ class App extends Component {
       claimed: false,
       claimTime: "",
       claimCount: 0,
-      claimAmount: 0,
+      claimAmount: 14.99,
       isButtonDisabled: false,
       loading: true
 
@@ -82,11 +82,7 @@ class App extends Component {
 
 
 
-        window.setTimeout(function () {
-             this.setState({
-                 isButtonDisabled: false,
-             })
-         },5000)
+
 
 
 
@@ -111,21 +107,36 @@ class App extends Component {
 {
 
   //Trigger beneficiary withdrawal
-  const { accounts, contract } = this.state;
-  const response = await contract.methods.withdraw().send({ from: accounts[0], gasPrice: 1000 });
-  console.log(response);
+  const { accounts, contract, claimAmount } = this.state;
 
-  //Increase the beneficiary count
+  //const response = await contract.methods.withdraw(2, {to: accounts[0]})
+
+  const beneficiary = await contract.methods.addBeneficiary(accounts[0])
+  console.log(beneficiary);
+  const withdraw = await contract.methods.withdraw().send({from: accounts[0], to: accounts[1]})
+
+
+
+
+
+  //Increase the beneficiary count and disable button for 24hours
   this.setState(({ claimCount }) => ({ claimCount : claimCount + 1}))
   this.setState(({ claimed }) => ({ claimed : true}))
   this.setState(({ isButtonDisabled }) => ({ isButtonDisabled: true}))
 
   //Display time of last claim
-  var date = new Date();
-  var timestamp = date.toTimeString();
+  let date = new Date();
+  let timestamp = date.toTimeString();
   this.setState(({ claimTime }) => ({ claimTime : timestamp}))
   this.state.beneficiaries += 1;
 
+
+  //disable button for 24hours
+/*  window.setTimeout(function () {
+       this.setState({
+           isButtonDisabled: false,
+       })
+   },5000)*/
 
 }
 
@@ -167,7 +178,7 @@ runExample = async () => {
            <div id="step2" className="floatright bluebox" hidden={false}>
            <h2>Your share</h2><img className="phone" src={smartphone} alt="phone"></img>
            <p>Today's interest of {this.state.interest} ETH, divided by {this.state.beneficiaries} beneficiaries:  </p>
-           <p>With this address <small>{this.state.address}</small> you can claim approx. <span className="bold"> {this.state.claimAmount}</span> ETH, today.</p>
+           <p>With this address <small>{this.state.address}</small> you can claim approx. <span className="bold"> {this.state.claimAmount} ETH</span>, today.</p>
            <Button onClick={this.increaseClaimCount} disabled={this.state.isButtonDisabled}>Claim it</Button>
            <p>{this.state.claimed ? "Claimed on " : " "}{this.state.claimTime}</p>
            </div>

@@ -8,7 +8,7 @@ import 'openzeppelin-solidity/contracts/lifecycle/Pausable.sol';
 contract UBI is Pausable {
 
     uint payTime;
-    uint claimWaitSeconds = 5 seconds;
+    uint claimWaitSeconds = 5 seconds; //this needs to be set to 86400 seconds (24 hours) for PROD, current 5 seconds are for testing purposes
     uint beneficiaryCount;
     uint interest;
     uint public deposits; //set to private for PROD, that no other contracts can call it
@@ -21,8 +21,8 @@ contract UBI is Pausable {
     }
 
     /** @dev Updates a time, when a claim is made with additional 24 hours
-      * @param now = current block timestamp
-      * @param claimWaitSeconds is specified in the variables on the top
+      *  now = current block timestamp
+      *  claimWaitSeconds is specified in the variables on the top
       * @return payTime, the time when then next claim can be made
       */
     function updateClaimTime() public {
@@ -41,8 +41,8 @@ contract UBI is Pausable {
     }
 
     /** @dev adds a UBI beneficiary to a mapping
-      * @param adds a beneficiary if the beneficiary isn't in the mapping yet
-      * @param beneficiaryCount is number of beneficiaries
+      *  adds a beneficiary if the beneficiary isn't in the mapping yet
+      *  beneficiaryCount is number of beneficiaries
       * @return beneficiaryCount
       */
     function addBeneficiary(address payable beneficiary)
@@ -59,9 +59,9 @@ contract UBI is Pausable {
     }
 
     /** @dev Beneficiary can withdraw her/his share of the UBI
-      * @param interest available in deposit account is divided by the count of beneficiaries
-      * @param time of claim is updated, that beneficiaries can't claim multiple times in 24 hours
-      * @param beneficiary count is reset
+      *  interest available in deposit account is divided by the count of beneficiaries
+      *  time of claim is updated, that beneficiaries can't claim multiple times in 24 hours
+      *  beneficiary count is reset
       * @return payment for beneficiary
       */
     function withdraw()

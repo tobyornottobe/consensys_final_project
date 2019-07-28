@@ -1,9 +1,8 @@
 const UBI = artifacts.require("UBI");
 
-
 contract("UBI", accounts => {
   let instance = null;
-  before(async () => {
+  beforeEach(async () => {
     const instance = await UBI.deployed();
   });
 
