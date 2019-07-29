@@ -13,7 +13,7 @@ contract UBI is Pausable {
     uint interest;
     uint public deposits; //set to private for PROD, that no other contracts can call it
     address private agent;
-    mapping(address => bool) public beneficiaries;
+    mapping(address => bool) public beneficiaries; //set to private for PROD
 
     constructor() public {
         agent = msg.sender;
@@ -43,7 +43,6 @@ contract UBI is Pausable {
     /** @dev adds a UBI beneficiary to a mapping
       *  adds a beneficiary if the beneficiary isn't in the mapping yet
       *  beneficiaryCount is number of beneficiaries
-      * @return beneficiaryCount
       */
     function addBeneficiary(address payable beneficiary)
     external
@@ -58,11 +57,11 @@ contract UBI is Pausable {
 
     }
 
+
     /** @dev Beneficiary can withdraw her/his share of the UBI
       *  interest available in deposit account is divided by the count of beneficiaries
       *  time of claim is updated, that beneficiaries can't claim multiple times in 24 hours
       *  beneficiary count is reset
-      * @return payment for beneficiary
       */
     function withdraw()
     public
