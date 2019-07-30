@@ -29,11 +29,14 @@ class MyComponent extends Component {
   }
 
   componentDidMount = async () => {
-      const { contract, web3 } = this.props;
+      const { contract, web3, accounts } = this.props;
 
       //Get balance of foundation account
       var balance = await web3.eth.getBalance(contract.options.address); //Will give value of the foundation capital in.
-      var num = web3.utils.fromWei(balance, "ether")
+      //const balance = await contract.methods.balanceOf().call({from: accounts[0]});
+      //const numBN = web3.utils.toBN(balance);
+      const num = web3.utils.fromWei(balance, "ether");
+
       this.setState({ foundationCapital: num});
 
       //Calculate interest and share for each beneficiary
@@ -51,42 +54,46 @@ class MyComponent extends Component {
     }*/
   };
 
+  //connect to MetaMask
   connectMM = async () => {
       await window.ethereum.enable();//await needs async
       this.setState({ connected: true });
   }
 
+  //deposit amount to UBI contract address
   deposit = async () => {
       const { accounts, contract, web3 } = this.props;
       const deposit = await contract.methods.deposit().send({ value: web3.utils.toBN(5000000000000000000), from: accounts[0], gasLimit: 100000});
       this.setState({ deposited: true });
   }
 
+  //add a beneficiary to the mapping
   addBeneficiary = async () => {
       const { accounts, contract } = this.props;
-      //Add user as beneficiary
       const addBeneficiary = await contract.methods.addBeneficiary(accounts[0]).send({from: accounts[0], gasLimit: 100000});
       this.setState({ beneficiaryAdded: true });
   }
 
 
-
+  //beneficiary can withdraw UBI amount
   withdraw = async () => {
 
-      //Trigger beneficiary withdrawal
-      const { claimAmount } = this.state;
-      const { accounts, contract, web3 } = this.props;
+    //Trigger beneficiary withdrawal
+    const { claimAmount } = this.state;
+    const { accounts, contract, web3 } = this.props;
+    console.log(contract.options.address);
 
-      const withdraw = await contract.methods.withdraw().send({ from: contract.options.address, to: accounts[0]})
+    const withdraw = await contract.methods.withdraw().send({ from: accounts[0], gasLimit: 100000})
 
-      //Increase the beneficiary count and disable button for 24hours
-      this.setState(({ claimCount, claimed, isButtonDisabled }) => ({ claimCount : claimCount + 1, claimed : true, isButtonDisabled: true}))
+    //Increase the beneficiary count and disable button for 24hours
+    this.setState(({ claimCount, claimed, isButtonDisabled }) => ({ claimCount : claimCount + 1, claimed : true, isButtonDisabled: true}))
 
-      //Display time of last claim
-      let date = new Date();
-      let timestamp = date.toTimeString();
-      this.setState(({ claimTime }) => ({ claimTime : timestamp}))
-      this.state.beneficiaries += 1;
+    //Display time of last claim
+    let date = new Date();
+    let timestamp = date.toTimeString();
+    this.setState(({ claimTime }) => ({ claimTime : timestamp}))
+    this.state.beneficiaries += 1;
+
 
 
       //disable button for 24hours
@@ -101,23 +108,19 @@ class MyComponent extends Component {
 
 
 
-  renderConnectionBox(){
-         return(
-           <div id="step1" className="floatright bluebox" hidden={false}>
-           <h2>Connect with MetaMask to claim your Universal Block Income</h2>
-           <MetaMaskButton onClick={this.connectMM} >Connect with MetaMask</MetaMaskButton>
-           </div>
-         )
-       }
+    renderConnectionBox(){
+      return(
+         <div id="step1" className="floatright bluebox" hidden={this.state.showConnectionBox}>
+         <h2>Connect with MetaMask to claim your Universal Block Income</h2>
+         <MetaMaskButton onClick={this.connectMM} >Connect with MetaMask</MetaMaskButton>
+         </div>
+      )
+  }
 
-  renderClaimBox() {
+  renderClaimBox(){
       const { accounts } = this.props;
-      //console.log(this.state.claimed)
-      //console.log(this.state.claimAmount)
-      //console.log(this.state.claimTime)
-      if(this.beneficiaryAdded = true){
-        return (
-            <div id="step2" className="floatright bluebox" hidden={false}>
+      return (
+            <div id="step2" className="floatright bluebox" hidden={this.state.showClaimBox}>
             <h2>Your share</h2><img className="phone" src={smartphone} alt="phone"></img>
             <p>Today's interest of {this.state.interest} ETH, divided by {this.state.beneficiaries} beneficiaries:  </p>
             <p>With this account <small>{accounts}</small> you can claim approx. <span className="bold"> {this.state.claimAmount} ETH</span>, today.</p>
@@ -127,29 +130,28 @@ class MyComponent extends Component {
             <p>{this.state.claimed ? "Claimed on " : " "}{this.state.claimTime}</p>
             </div>
           );
-      } else if (this.beneficiaryAdded = false) {
+  }
 
-          return (
-              <div id="step2" className="floatright bluebox" hidden={false}>
-              <h2>To claim your share...</h2><img className="phone" src={smartphone} alt="phone"></img>
-              <p>...add yourself to the beneficiary database.</p>
+  renderRegistrationBox(){
+     return (
+          <div id="step3" className="floatright bluebox" hidden={this.state.showRegistrationBox}>
+          <h2>To claim your share...</h2><img className="phone" src={smartphone} alt="phone"></img>
+          <p>...register to the beneficiary database. Registration is only necessary once.</p>
 
-              <Button onClick={this.addBeneficiary}>Add now</Button>
+          <Button onClick={this.addBeneficiary}>Register</Button>
 
-
-              <p>{this.state.claimed ? "Claimed on " : " "}{this.state.claimTime}</p>
-              </div>
-            );
-      }
-
+          </div>
+      );
   }
 
   renderDonateBox(){
       const { contract } = this.props;
       return(
-          <div id="step3" className="floatright bluebox" hidden={false}>
+          <div id="step4" className="floatright bluebox" hidden={this.state.showDonateBox}>
           <h2>Donate to this address</h2>
-          <QR value={contract.options.address} />
+          <div className="center"><QR value={contract.options.address} /></div>
+          <small>{contract.options.address}</small>
+          <p> </p>
           <Button onClick={this.deposit}>Donate 5 ETH</Button>
           </div>
       );
@@ -167,9 +169,12 @@ class MyComponent extends Component {
 
             </div>
             {window.ethereum.selectedAddress
-            ? this.renderClaimBox()
+            ? this.renderRegistrationBox()
             : this.renderConnectionBox()
             }
+            {this.renderClaimBox()}
+            {this.renderDonateBox()}
+
       </Fragment>
     );
   }

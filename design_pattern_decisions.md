@@ -1,11 +1,5 @@
 ## Design Patterns
 
-Why did I chose to use the design patterns that I did?
-
-What other design patterns have you used / not used?
-■  	Why did you choose the patterns that you did?
-■  	Why not others?
-
 
 # Restricting access
 Not for testing, but for production I have commented in the smart contract what I would change to restrict access, e.g. setting mapping to private. The more explicit the contract is, the better gets the protection.

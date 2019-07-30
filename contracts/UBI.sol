@@ -8,7 +8,7 @@ import 'openzeppelin-solidity/contracts/lifecycle/Pausable.sol';
 contract UBI is Pausable {
 
     uint payTime;
-    uint claimWaitSeconds = 5 seconds; //this needs to be set to 86400 seconds (24 hours) for PROD, current 5 seconds are for testing purposes
+    uint claimWaitSeconds = 5; //this needs to be set to 86400 seconds (24 hours) for PROD, current 5 seconds are for testing purposes
     uint beneficiaryCount;
     uint interest;
     uint public deposits; //set to private for PROD, that no other contracts can call it
@@ -29,6 +29,17 @@ contract UBI is Pausable {
          payTime = now + claimWaitSeconds;
     }
 
+    /** @dev fake function to get a virtual interest
+      * @return balance + interest
+      */
+    function balanceOf()
+    view
+    external
+    returns(uint) {
+
+      return address(this).balance + interest;
+    }
+
     /** @dev donor can deposit an amount to an account accessible by the beneficiaries
       * @return deposit made by donor
       */
@@ -38,6 +49,7 @@ contract UBI is Pausable {
     payable
     {
         deposits += msg.value;
+        interest += (msg.value * 2) / 100;
     }
 
     /** @dev adds a UBI beneficiary to a mapping
@@ -68,10 +80,9 @@ contract UBI is Pausable {
     onlyOnPayDay()
     whenNotPaused()
     onlyBeneficiary()
-    payable
     {
         beneficiaries[msg.sender] = false;
-        msg.sender.transfer(interest/beneficiaryCount);
+        msg.sender.transfer(2000000000000000000); //for now I send an arbitrary number as there was not enough time to work on the interest function, I needed to understand the gas fee first
         updateClaimTime();
         beneficiaryCount -= 1;
 
@@ -80,19 +91,19 @@ contract UBI is Pausable {
     /** @dev defines owner of contract
       */
     modifier onlyAgent() {
-        require(msg.sender == agent);
+        require(msg.sender == agent, "only Agent");
         _;
     }
     /** @dev defines who is a beneficiary
       */
     modifier onlyBeneficiary() {
-        require(beneficiaries[msg.sender] == true);
+        require(beneficiaries[msg.sender] == true, "only Beneficiary");
         _;
     }
     /** @dev defines when future withdrawal will be possible
       */
     modifier onlyOnPayDay() {
-        require (block.timestamp > payTime);
+        require(now > payTime, "onlyOnPayDay");
         _;
     }
 
