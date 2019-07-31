@@ -4,13 +4,15 @@
   "private": true,
   "dependencies": {
     "@rimble/connection-banner": "^1.2.1",
+    "bindings": "^1.5.0",
     "openzeppelin-solidity": "^2.3.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-scripts": "2.1.1",
     "rimble-ui": "^0.9.4",
     "styled-components": "^4.3.2",
-    "web3": "^1.0.0-beta.37"
+    "truffle-hdwallet-provider": "^1.0.15",
+    "web3": "^1.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -7,13 +7,13 @@ import 'openzeppelin-solidity/contracts/lifecycle/Pausable.sol';
 /** @title Universal Block Income (UBI) */
 contract UBI is Pausable {
 
-    uint payTime;
+    uint payTime; //is the time the user claimed the last time the UBI plus the time the user has to wait to claim a new UBI
     uint claimWaitSeconds = 5; //this needs to be set to 86400 seconds (24 hours) for PROD, current 5 seconds are for testing purposes
-    uint beneficiaryCount;
-    uint interest;
-    uint public deposits; //set to private for PROD, that no other contracts can call it
-    address private agent;
-    mapping(address => bool) public beneficiaries; //set to private for PROD
+    uint beneficiaryCount; //is the number of beneficiaries that claimed a UBI
+    uint interest; //is the return on investment, when investing the foundation capital
+    uint public deposits; //set to private for PROD, that no other contracts can call it, deposits are the amount donated to the foundation capital
+    address private agent; //is the agent address
+    mapping(address => bool) public beneficiaries; //set to private for PROD, beneficiaries are the ones claiming the UBI
 
     constructor() public {
         agent = msg.sender;
@@ -23,25 +23,13 @@ contract UBI is Pausable {
     /** @dev Updates a time, when a claim is made with additional 24 hours
       *  now = current block timestamp
       *  claimWaitSeconds is specified in the variables on the top
-      * @return payTime, the time when then next claim can be made
       */
     function updateClaimTime() public {
          payTime = now + claimWaitSeconds;
     }
 
-    /** @dev fake function to get a virtual interest
-      * @return balance + interest
-      */
-    function balanceOf()
-    view
-    external
-    returns(uint) {
-
-      return address(this).balance + interest;
-    }
 
     /** @dev donor can deposit an amount to an account accessible by the beneficiaries
-      * @return deposit made by donor
       */
     function deposit()
     external //only people from outside can call it, want to be as restrictive as possible
@@ -55,6 +43,7 @@ contract UBI is Pausable {
     /** @dev adds a UBI beneficiary to a mapping
       *  adds a beneficiary if the beneficiary isn't in the mapping yet
       *  beneficiaryCount is number of beneficiaries
+      *  @param beneficiary address of beneficiary
       */
     function addBeneficiary(address payable beneficiary)
     external

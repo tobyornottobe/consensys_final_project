@@ -1,5 +1,10 @@
-var UBI = artifacts.require("UBI.sol");
-
+var UBI = artifacts.require("./UBI.sol");
+/* //used for deployment to rinkeby
+module.exports = function(deployer, accounts) {
+  let owner = accounts[0]
+  deployer.deploy(UBI);
+};
+*/
 module.exports = async function(deployer, _network, accounts) {
   await deployer.deploy(UBI);
   const ubi = await UBI.deployed();
