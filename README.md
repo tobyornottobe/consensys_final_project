@@ -68,11 +68,11 @@ npm install truffle-hdwallet-provider
 ```
 
 ### Testing
-The tests are covering the solidity smart contract and are located at ./test. The purpose of those tests is to check the proper smart contract functionality of depositing, withdrawing amounts, as well as claiming an income within a time period of 24 hours. To run the tests, simply run:
+The tests are covering the solidity smart contract and are located at ./test. The purpose of those tests is to check the proper smart contract functionality of depositing, withdrawing amounts, as well as claiming an income within a certain time period. To run the tests, simply run:
 ```
 truffle test
 ```
-There are 5 tests the UBI.sol contract.
+There are 5 tests for the UBI.sol contract.
 
 Note: ganache-cli will need to be running in order for the tests to run
 
