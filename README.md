@@ -35,16 +35,29 @@ Now, that we have the local blockchian, we focus on the app that should communic
 git clone https://github.com/tobyornottobe/consensys_final_project
 cd ./consensys_final_project
 ```
+Got to the client directory:
+```
+cd client
+```
+
+Note: In the repo you would also get the node modules, if they are for any reason not in the client directory or you prefer to install them seperately, feel free to add the following commands to your console:
+```
+npm install
+npm install @rimble/connection-banner
+npm install --save rimble-ui styled-components
+npm install openzeppelin-solidity
+npm install web3 (latest version)
+npm install --save bindings
+npm install truffle-hdwallet-provider
+```
+
 Now you need to compile and migrate the smart contracts with truffle. Note that it is necessary that ganache-cli runs in a separate console.
 ```
 truffle compile
 truffle migrate
 ```
 
-Got to the client directory:
-```
-cd client
-```
+
 ### Start the project locally
 ```
 npm run start
@@ -56,16 +69,7 @@ Note: Open project in you favourite editor, e.g. atom:
 ```
 atom .
 ```
-Note: In the repo you would also get the node modules, if you prefer to install them seperately, feel free to add the following commands to your console:
-```
-npm install
-npm install @rimble/connection-banner
-npm install --save rimble-ui styled-components
-npm install openzeppelin-solidity
-npm install web3 (latest version)
-npm install --save bindings
-npm install truffle-hdwallet-provider
-```
+
 
 ### Testing
 The tests are covering the solidity smart contract and are located at ./test. The purpose of those tests is to check the proper smart contract functionality of depositing, withdrawing amounts, as well as claiming an income within a certain time period. To run the tests, simply run:
