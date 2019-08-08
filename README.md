@@ -35,7 +35,7 @@ Now, that we have the local blockchian, we focus on the app that should communic
 git clone https://github.com/tobyornottobe/consensys_final_project
 cd ./consensys_final_project
 ```
-Got to the client directory:
+Go to the client directory:
 ```
 cd client
 ```
@@ -51,7 +51,7 @@ npm install --save bindings
 npm install truffle-hdwallet-provider
 ```
 
-Now you need to compile and migrate the smart contracts with truffle. Note that it is necessary that ganache-cli runs in a separate console.
+Now, you need to compile and migrate the smart contracts with truffle. Note that it is necessary that ganache-cli runs in a separate console.
 ```
 truffle compile
 truffle migrate
